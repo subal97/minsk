@@ -24,6 +24,18 @@ public class Evaluator
             return (int)n.LiteralToken.Value;
         }
 
+        if (node is UnaryExpressionSyntax u)
+        {
+            var operand = EvaluateExpression(u.Operand);
+
+            return u.OperatorToken.Kind switch
+            {
+                SyntaxKind.PlusToken => operand,
+                SyntaxKind.MinusToken => -operand,
+                _ => throw new Exception($"Enexpected unary operator <{u.OperatorToken.Kind}>"),
+            };
+        }
+
         if (node is BinaryExpressionSyntax b)
         {
             var left = EvaluateExpression(b.Left);
@@ -35,7 +47,7 @@ public class Evaluator
                 SyntaxKind.MinusToken => left - right,
                 SyntaxKind.StarToken => left * right,
                 SyntaxKind.SlashToken => left / right,
-                _ => throw new Exception($"Enexpected binary operator <{b.OperatorToken.Kind}>."),
+                _ => throw new Exception($"Enexpected binary operator <{b.OperatorToken.Kind}>"),
             };
         }
 
