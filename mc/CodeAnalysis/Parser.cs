@@ -1,4 +1,6 @@
-﻿namespace Minsk.CodeAnalysis;
+﻿using mc.CodeAnalysis;
+
+namespace Minsk.CodeAnalysis;
 
 internal sealed class Parser
 {
@@ -66,33 +68,20 @@ internal sealed class Parser
         );
     }
 
-    private ExpressionSyntax ParseExpression()
-    {
-        return ParseTerm();
-    }
-
-    private ExpressionSyntax ParseTerm()
-    {
-        var left = ParseFactor();
-
-        while (Current.Kind is SyntaxKind.PlusToken or SyntaxKind.MinusToken)
-        {
-            var operatorToken = NextToken();
-            var right = ParseFactor();
-            left = new BinaryExpressionSyntax(left, operatorToken, right);
-        }
-
-        return left;
-    }
-
-    private ExpressionSyntax ParseFactor()
+    private ExpressionSyntax ParseExpression(int parentPrecedence = 0)
     {
         var left = ParsePrimaryExpression();
 
-        while (Current.Kind is SyntaxKind.StarToken or SyntaxKind.SlashToken)
+        while (true)
         {
+            var precedence = Current.Kind.GetBinaryOperatorPrecedence();
+
+            if (precedence == 0 || precedence <= parentPrecedence)
+            {
+                break;
+            }
             var operatorToken = NextToken();
-            var right = ParsePrimaryExpression();
+            var right = ParseExpression(precedence);
             left = new BinaryExpressionSyntax(left, operatorToken, right);
         }
 
