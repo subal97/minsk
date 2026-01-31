@@ -1,4 +1,6 @@
 ﻿using Minsk.CodeAnalysis;
+using Minsk.CodeAnalysis.Binding;
+using Minsk.CodeAnalysis.Syntax;
 
 namespace Minsk;
 
@@ -28,6 +30,9 @@ internal class Program
             }
 
             var syntaxTree = SyntaxTree.Parse(line);
+            var binder = new Binder();
+            var boundExpression = binder.BindExpression(syntaxTree.Root);
+            var diagnostics = syntaxTree.Diagnostics.Concat(binder.Diagnostics).ToArray();
 
             if (showTree)
             {
@@ -36,16 +41,16 @@ internal class Program
                 Console.ResetColor();
             }
 
-            if (!syntaxTree.Diagnostics.Any())
+            if (diagnostics.Length == 0)
             {
-                var e = new Evaluator(root: syntaxTree.Root);
+                var e = new Evaluator(expression: boundExpression);
                 var result = e.Evaluate();
                 Console.WriteLine(result);
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                foreach (var diagnostic in syntaxTree.Diagnostics)
+                foreach (var diagnostic in diagnostics)
                 {
                     Console.WriteLine(diagnostic);
                 }

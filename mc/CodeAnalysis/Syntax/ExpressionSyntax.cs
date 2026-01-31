@@ -1,3 +1,3 @@
-﻿namespace Minsk.CodeAnalysis;
+﻿namespace Minsk.CodeAnalysis.Syntax;
 
 public abstract class ExpressionSyntax : SyntaxNode { }

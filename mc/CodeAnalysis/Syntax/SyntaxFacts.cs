@@ -1,6 +1,4 @@
-﻿using Minsk.CodeAnalysis;
-
-namespace mc.CodeAnalysis;
+﻿namespace Minsk.CodeAnalysis.Syntax;
 
 internal static class SyntaxFacts
 {
