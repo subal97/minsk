@@ -1,6 +1,6 @@
 ﻿namespace Minsk.CodeAnalysis;
 
-class Parser
+internal sealed class Parser
 {
     private List<string> _diagnostics = [];
     private readonly SyntaxToken[] _tokens;
@@ -16,7 +16,7 @@ class Parser
 
         do
         {
-            token = lexer.NextToken();
+            token = lexer.Lex();
 
             if (token.Kind != SyntaxKind.WhiteSpaceToken && token.Kind != SyntaxKind.BadToken)
             {
@@ -43,7 +43,7 @@ class Parser
         return current;
     }
 
-    public SyntaxToken Match(SyntaxKind kind)
+    public SyntaxToken MatchToken(SyntaxKind kind)
     {
         if (Current.Kind == kind)
         {
@@ -56,8 +56,8 @@ class Parser
 
     public SyntaxTree Parse()
     {
-        var expression = ParseTerm();
-        var eofToken = Match(SyntaxKind.EOFToken);
+        var expression = ParseExpression();
+        var eofToken = MatchToken(SyntaxKind.EOFToken);
 
         return new SyntaxTree(
             root: expression,
@@ -101,11 +101,11 @@ class Parser
 
     private ExpressionSyntax ParsePrimaryExpression()
     {
-        if (Current.Kind is SyntaxKind.OpenParanthesisToken)
+        if (Current.Kind is SyntaxKind.OpenParenthesisToken)
         {
             var left = NextToken();
             var expression = ParseExpression();
-            var right = Match(SyntaxKind.CloseParanthesisToken);
+            var right = MatchToken(SyntaxKind.CloseParenthesisToken);
 
             return new ParenthesizedExpressionSyntax(
                 openParenthesisToken: left,
@@ -114,7 +114,7 @@ class Parser
             );
         }
 
-        var numberToken = Match(SyntaxKind.NumberToken);
-        return new NumberExpressionSyntax(numberToken);
+        var numberToken = MatchToken(SyntaxKind.NumberToken);
+        return new LiteralExpressionSyntax(numberToken);
     }
 }

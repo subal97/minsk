@@ -1,6 +1,6 @@
 ﻿namespace Minsk.CodeAnalysis;
 
-class Lexer
+internal class Lexer
 {
     private readonly string _text;
     private int _position;
@@ -29,7 +29,7 @@ class Lexer
         _position++;
     }
 
-    public SyntaxToken NextToken()
+    public SyntaxToken Lex()
     {
         // <numbers>
         // + - * / ()
@@ -74,8 +74,8 @@ class Lexer
             '-' => new SyntaxToken(SyntaxKind.MinusToken, _position++, "-", null!),
             '*' => new SyntaxToken(SyntaxKind.StarToken, _position++, "*", null!),
             '/' => new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null!),
-            '(' => new SyntaxToken(SyntaxKind.OpenParanthesisToken, _position++, "(", null!),
-            ')' => new SyntaxToken(SyntaxKind.CloseParanthesisToken, _position++, ")", null!),
+            '(' => new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null!),
+            ')' => new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null!),
             _ => new SyntaxToken(
                 SyntaxKind.BadToken,
                 _position++,

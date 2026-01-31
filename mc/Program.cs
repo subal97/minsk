@@ -6,10 +6,11 @@ internal class Program
 {
     static void Main()
     {
-        bool showTree = false;
+        var showTree = false;
         while (true)
         {
             Console.Write("> ");
+
             var line = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(line))
                 return;
@@ -20,8 +21,7 @@ internal class Program
                 Console.WriteLine(showTree ? "Showing parse trees." : "Not showing parse trees.");
                 continue;
             }
-
-            if (line.Equals("#cls"))
+            else if (line.Equals("#cls"))
             {
                 Console.Clear();
                 continue;

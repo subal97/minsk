@@ -1,6 +1,6 @@
 ﻿namespace Minsk.CodeAnalysis;
 
-sealed class SyntaxTree
+public sealed class SyntaxTree
 {
     public SyntaxTree(
         ExpressionSyntax root,
