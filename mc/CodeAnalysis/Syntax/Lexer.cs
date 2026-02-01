@@ -34,6 +34,7 @@ internal class Lexer
         // <numbers>
         // + - * / ()
         // <whitespace>
+        // <boolean>
         // EOF
 
         if (_position >= _text.Length)
@@ -44,16 +45,15 @@ internal class Lexer
         if (char.IsDigit(Current))
         {
             var start = _position;
+
             while (char.IsDigit(Current))
                 Next();
 
             var text = _text[start.._position];
-
             if (!int.TryParse(text, out int value))
             {
                 _diagnostics.Add($"The number <{text}> isn't a valid Int32.");
             }
-
             return new SyntaxToken(SyntaxKind.NumberToken, start, text, value);
         }
 
@@ -66,6 +66,18 @@ internal class Lexer
 
             var text = _text[start.._position];
             return new SyntaxToken(SyntaxKind.WhiteSpaceToken, start, text, null!);
+        }
+
+        if (char.IsLetter(Current))
+        {
+            var start = _position;
+
+            while (char.IsLetter(Current))
+                Next();
+
+            var text = _text[start.._position];
+            var kind = SyntaxFacts.GetKeywordKind(text);
+            return new SyntaxToken(kind, start, text, null!);
         }
 
         var token = Current switch

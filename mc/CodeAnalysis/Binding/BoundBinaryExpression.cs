@@ -13,9 +13,9 @@ internal sealed class BoundBinaryExpression : BoundExpression
         Right = right;
     }
 
-    public override Type Type => Left.Type;
-
     public override BoundNodeKind Kind => BoundNodeKind.BinaryExpression;
+
+    public override Type Type => Left.Type;
 
     public BoundExpression Left { get; }
 

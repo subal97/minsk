@@ -11,37 +11,37 @@ internal class Evaluator
         _expression = expression;
     }
 
-    public int Evaluate()
+    public object Evaluate()
     {
         var result = EvaluateExpression(_expression);
         return result;
     }
 
-    private int EvaluateExpression(BoundExpression node)
+    private object EvaluateExpression(BoundExpression node)
     {
         ArgumentNullException.ThrowIfNull(node);
 
         if (node is BoundLiteralExpression n)
         {
-            return (int)n.Value;
+            return n.Value;
         }
 
         if (node is BoundUnaryExpression u)
         {
-            var operand = EvaluateExpression(u.Operand);
+            var operand = (int)EvaluateExpression(u.Operand);
 
             return u.OperatorKind switch
             {
                 BoundUnaryOperatorKind.Identity => operand,
                 BoundUnaryOperatorKind.Negation => -operand,
-                _ => throw new Exception($"Enexpected unary operator <{u.OperatorKind}>"),
+                _ => throw new Exception($"Unexpected unary operator {u.OperatorKind}"),
             };
         }
 
         if (node is BoundBinaryExpression b)
         {
-            var left = EvaluateExpression(b.Left);
-            var right = EvaluateExpression(b.Right);
+            var left = (int)EvaluateExpression(b.Left);
+            var right = (int)EvaluateExpression(b.Right);
 
             return b.OperatorKind switch
             {
@@ -49,7 +49,7 @@ internal class Evaluator
                 BoundBinaryOperatorKind.Subtraction => left - right,
                 BoundBinaryOperatorKind.Multiplication => left * right,
                 BoundBinaryOperatorKind.Division => left / right,
-                _ => throw new Exception($"Enexpected binary operator <{b.OperatorKind}>"),
+                _ => throw new Exception($"Unexpected binary operator {b.OperatorKind}"),
             };
         }
 
