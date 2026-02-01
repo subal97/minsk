@@ -6,22 +6,25 @@ internal class Lexer
     private int _position;
     private List<string> _diagnostics = [];
 
-    public IEnumerable<string> Diagnostics => _diagnostics;
-
     public Lexer(string text)
     {
         _text = text;
     }
 
-    private char Current
-    {
-        get
-        {
-            if (_position >= _text.Length)
-                return '\0';
+    public IEnumerable<string> Diagnostics => _diagnostics;
 
-            return _text[_position];
-        }
+    private char Current => Peek(0);
+
+    private char LookAhead => Peek(1);
+
+    private char Peek(int offset)
+    {
+        int index = _position + offset;
+
+        if (index >= _text.Length)
+            return '\0';
+
+        return _text[index];
     }
 
     private void Next()
@@ -80,27 +83,48 @@ internal class Lexer
             return new SyntaxToken(kind, start, text, null!);
         }
 
-        var token = Current switch
+        switch (Current)
         {
-            '+' => new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null!),
-            '-' => new SyntaxToken(SyntaxKind.MinusToken, _position++, "-", null!),
-            '*' => new SyntaxToken(SyntaxKind.StarToken, _position++, "*", null!),
-            '/' => new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null!),
-            '(' => new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null!),
-            ')' => new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null!),
-            _ => new SyntaxToken(
-                SyntaxKind.BadToken,
-                _position++,
-                _text.Substring(_position - 1, 1),
-                null!
-            ),
-        };
+            // Arithematic tokens
+            case '+':
+                return new SyntaxToken(SyntaxKind.PlusToken, _position++, "+", null!);
+            case '-':
+                return new SyntaxToken(SyntaxKind.MinusToken, _position++, "-", null!);
+            case '*':
+                return new SyntaxToken(SyntaxKind.StarToken, _position++, "*", null!);
+            case '/':
+                return new SyntaxToken(SyntaxKind.SlashToken, _position++, "/", null!);
 
-        if (token.Kind is SyntaxKind.BadToken)
-        {
-            _diagnostics.Add($"ERROR: bad character input: '{_text[_position - 1]}'");
+            // Parenthesis tokens
+            case '(':
+                return new SyntaxToken(SyntaxKind.OpenParenthesisToken, _position++, "(", null!);
+            case ')':
+                return new SyntaxToken(SyntaxKind.CloseParenthesisToken, _position++, ")", null!);
+
+            // Logical token
+            case '!':
+                return new SyntaxToken(SyntaxKind.BangToken, _position++, "!", null!);
+            case '&':
+                if (LookAhead == '&')
+                    return new SyntaxToken(
+                        SyntaxKind.AmpersandAmpersandToken,
+                        _position += 2,
+                        "&&",
+                        null!
+                    );
+                break;
+            case '|':
+                if (LookAhead == '|')
+                    return new SyntaxToken(SyntaxKind.PipePipeToken, _position += 2, "||", null!);
+                break;
         }
 
-        return token;
+        _diagnostics.Add($"ERROR: bad character input: '{Current}'");
+        return new SyntaxToken(
+            SyntaxKind.BadToken,
+            _position++,
+            _text.Substring(_position - 1, 1),
+            null!
+        );
     }
 }
