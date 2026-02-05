@@ -1,4 +1,4 @@
-﻿namespace Minsk.CodeAnalysis;
+﻿namespace Minsk.CodeAnalysis.Syntax;
 
 public enum SyntaxKind
 {
@@ -11,11 +11,20 @@ public enum SyntaxKind
     MinusToken,
     StarToken,
     SlashToken,
+    BangToken,
+    AmpersandAmpersandToken,
+    PipePipeToken,
     OpenParenthesisToken,
     CloseParenthesisToken,
+    IdentifierToken,
+
+    // Keywords
+    FalseKeyword,
+    TrueKeyword,
 
     // Expressions
     LiteralExpression,
+    UnaryExpression,
     BinaryExpression,
     ParenthesizedExpression,
 }
